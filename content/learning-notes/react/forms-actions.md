@@ -33,6 +33,37 @@ function TicketForm() {
 }
 ```
 
+```jsx runnable title="Support ticket form" category=forms
+import { useActionState } from "react";
+
+async function createTicket(prev, formData) {
+  const title = String(formData.get("title") || "").trim();
+  await new Promise((resolve) => setTimeout(resolve, 400));
+  if (!title) return prev;
+  return [...prev, { id: String(prev.length + 1), title }];
+}
+
+export default function TicketForm() {
+  const [tickets, formAction, isPending] = useActionState(createTicket, []);
+
+  return (
+    <div>
+      <form action={formAction}>
+        <input name="title" placeholder="Ticket title" />
+        <button type="submit" disabled={isPending}>
+          {isPending ? "Opening…" : "Open ticket"}
+        </button>
+      </form>
+      <ul>
+        {tickets.map((ticket) => (
+          <li key={ticket.id}>{ticket.title}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+```
+
 No `onSubmit`, no `preventDefault` for the happy path. Inputs can stay **uncontrolled** (`name=`) which is how `FormData` works.
 
 ### Why it was introduced?
@@ -126,6 +157,27 @@ Three ways to read pending:
 
 **3. Chat: send on Enter** — not a `<form>`? Use `startTransition(async () => send(text))` and disable the composer with `isPending`.
 
+```jsx runnable title="Place order pending" category=forms
+import { useActionState } from "react";
+
+async function placeOrder(_prev, formData) {
+  await new Promise((resolve) => setTimeout(resolve, 700));
+  return { orderId: "ORD-" + String(formData.get("sku") || "demo") };
+}
+
+export default function CheckoutForm() {
+  const [state, formAction, isPending] = useActionState(placeOrder, null);
+
+  return (
+    <form action={formAction} aria-busy={isPending}>
+      <input name="sku" defaultValue="mug-1" />
+      <button disabled={isPending}>{isPending ? "Placing…" : "Place order"}</button>
+      {state?.orderId ? <p role="status">Placed {state.orderId}</p> : null}
+    </form>
+  );
+}
+```
+
 ### Validation
 
 Client HTML: `required`, `type="email"`, `minLength`. This runs **before** the Action.
@@ -193,6 +245,44 @@ function Todos({ todos, addTodo }) {
         <button>Add</button>
       </form>
     </>
+  );
+}
+```
+
+```jsx runnable title="Optimistic todos" category=forms
+import { useOptimistic, useState } from "react";
+
+export default function OptimisticTodos() {
+  const [todos, setTodos] = useState([
+    { id: "1", title: "Read the Action docs" },
+  ]);
+  const [optimisticTodos, addOptimistic] = useOptimistic(
+    todos,
+    (current, title) => [...current, { id: "tmp-" + title, title, sending: true }],
+  );
+
+  async function action(formData) {
+    const title = String(formData.get("title") || "").trim();
+    if (!title) return;
+    addOptimistic(title);
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    setTodos((prev) => [...prev, { id: String(prev.length + 1), title }]);
+  }
+
+  return (
+    <div>
+      <ul>
+        {optimisticTodos.map((todo) => (
+          <li key={todo.id} style={{ opacity: todo.sending ? 0.6 : 1 }}>
+            {todo.title}
+          </li>
+        ))}
+      </ul>
+      <form action={action}>
+        <input name="title" placeholder="New todo" />
+        <button>Add</button>
+      </form>
+    </div>
   );
 }
 ```

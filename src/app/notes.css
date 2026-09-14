@@ -12,7 +12,7 @@
   height: 100vh;
   overflow: auto;
   color: var(--text);
-  font-family: var(--font-notes-sans), Outfit, system-ui, sans-serif;
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   background: var(--background);
   scroll-behavior: smooth;
 }
@@ -24,7 +24,7 @@
 }
 
 .notes-app code:not(.shiki *) {
-  font-family: var(--font-notes-mono), "IBM Plex Mono", ui-monospace, monospace;
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
   font-size: 0.86em;
   background: var(--code-bg);
   border: 1px solid var(--code-border);
@@ -264,7 +264,7 @@
 }
 
 .notes-app .count {
-  font-family: var(--font-notes-mono), "IBM Plex Mono", ui-monospace, monospace;
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
   font-size: 0.72rem;
   color: var(--muted);
 }
@@ -306,7 +306,7 @@
   font-size: 0.75rem;
   font-weight: 700;
   margin-top: 0.15rem;
-  font-family: var(--font-notes-mono), "IBM Plex Mono", ui-monospace, monospace;
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
 }
 
 .notes-app .qa-learning .q-num {
@@ -318,9 +318,9 @@
 }
 
 .notes-app .answer {
-  padding: 0 1.05rem 1.05rem 2.55rem;
+  padding: 0.75rem 1.05rem 1.05rem 2.55rem;
   color: var(--muted-foreground);
-  font-size: 0.93rem;
+  font-size: 1rem;
   line-height: 1.6;
   overflow-x: auto;
 }
@@ -366,14 +366,15 @@
 
 .notes-app .def {
   margin: 0 0 0.55rem;
-  padding: 0.55rem 0.75rem;
+  padding: 0.75rem 0.85rem;
   background: color-mix(in srgb, var(--accent) 8%, transparent);
   border-left: 3px solid var(--accent);
   border-radius: 0 0.5rem 0.5rem 0;
   color: var(--def-text);
-  font-size: 0.86rem;
-  font-style: italic;
-  line-height: 1.5;
+  font-size: 0.9375rem;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 1.6;
 }
 
 .notes-app .md-heading {
@@ -493,7 +494,7 @@
   margin-top: 0.55rem;
   border-left: 3px solid var(--warn);
   background: color-mix(in srgb, var(--warn) 8%, transparent);
-  padding: 0.55rem 0.75rem;
+  padding: 0.75rem 0.85rem;
   border-radius: 0 0.5rem 0.5rem 0;
   color: var(--tip-text);
   font-size: 0.86rem;
@@ -503,7 +504,7 @@
   margin-top: 0.55rem;
   border-left: 3px solid var(--destructive);
   background: color-mix(in srgb, var(--destructive) 8%, transparent);
-  padding: 0.55rem 0.75rem;
+  padding: 0.75rem 0.85rem;
   border-radius: 0 0.5rem 0.5rem 0;
   color: var(--mistake-text);
   font-size: 0.86rem;
@@ -538,6 +539,95 @@
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+}
+
+.notes-app .interactive-example {
+  margin: 0.75rem 0 1rem;
+}
+
+.notes-app .interactive-example-title {
+  margin: 0 0 0.35rem;
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.notes-app .example-preview {
+  margin-top: 0.55rem;
+  border: 1px solid var(--line);
+  border-radius: 0.55rem;
+  background: var(--panel);
+  overflow: hidden;
+}
+
+.notes-app .example-preview-label {
+  padding: 0.35rem 0.65rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  border-bottom: 1px solid var(--line);
+}
+
+.notes-app .example-preview-frame {
+  display: block;
+  width: 100%;
+  height: 220px;
+  border: 0;
+  background: var(--background);
+}
+
+.notes-app .example-preview-error {
+  margin: 0;
+  padding: 0.65rem 0.75rem;
+  color: var(--mistake-text);
+  background: color-mix(in srgb, var(--destructive) 8%, transparent);
+  font-size: 0.8rem;
+  white-space: pre-wrap;
+}
+
+.notes-app .example-preview-hint {
+  margin: 0;
+  padding: 0.45rem 0.75rem 0.65rem;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.notes-app .example-category {
+  margin-bottom: 1.5rem;
+}
+
+.notes-app .example-card {
+  margin-bottom: 1.25rem;
+}
+
+.notes-app .example-card h3 {
+  margin: 0 0 0.25rem;
+  font-size: 1.05rem;
+}
+
+.notes-app .example-card-source {
+  margin: 0 0 0.55rem;
+  font-size: 0.84rem;
+  color: var(--muted);
+}
+
+.notes-app .example-card-source a {
+  color: var(--accent-2);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.notes-app .hub-kicker {
+  margin: 0 0 0.75rem;
+}
+
+.notes-app .hub-kicker a {
+  color: var(--accent-2);
+  text-decoration: none;
+  font-size: 0.84rem;
+  font-weight: 600;
 }
 
 .notes-app .hub-lede {
@@ -585,7 +675,7 @@
 }
 
 .notes-app .card .meta {
-  font-family: var(--font-notes-mono), "IBM Plex Mono", ui-monospace, monospace;
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
   font-size: 0.72rem;
   color: var(--accent-2);
   margin-top: 0.35rem;
@@ -629,6 +719,10 @@
 }
 
 @media (max-width: 900px) {
+  .notes-app .cards {
+    grid-template-columns: 1fr;
+  }
+
   .notes-app .shell {
     grid-template-columns: 1fr;
     height: auto;

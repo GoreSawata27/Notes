@@ -1,5 +1,6 @@
 import type { MdBlock } from "@/lib/notes/types";
 import { CodeBlock } from "@/components/theme/CodeBlock";
+import { InteractiveCodeBlock } from "./InteractiveCodeBlock";
 import { InlineMd } from "./InlineMd";
 
 export function MdBlocks({ blocks }: { blocks: MdBlock[] }) {
@@ -21,6 +22,16 @@ export function MdBlocks({ blocks }: { blocks: MdBlock[] }) {
           );
         }
         if (block.type === "code") {
+          if (block.runnable) {
+            return (
+              <InteractiveCodeBlock
+                key={index}
+                code={block.code}
+                lang={block.lang}
+                autoRun={block.autoRun}
+              />
+            );
+          }
           return <CodeBlock key={index} code={block.code} lang={block.lang} />;
         }
         if (block.type === "ul") {

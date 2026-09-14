@@ -44,6 +44,48 @@ function Tabs({ panels }) {
 }
 ```
 
+```jsx runnable title="Dashboard tabs" category=react-18
+import { useState, useTransition } from "react";
+
+const PANELS = [
+  { id: "overview", label: "Overview" },
+  { id: "revenue", label: "Revenue" },
+  { id: "cohorts", label: "Cohorts" },
+];
+
+function HeavyPanel({ id }) {
+  const rows = Array.from({ length: 40 }, (_, i) => `${id} metric ${i + 1}`);
+  return (
+    <ul>
+      {rows.slice(0, 8).map((row) => (
+        <li key={row}>{row}</li>
+      ))}
+    </ul>
+  );
+}
+
+export default function DashboardTabs() {
+  const [tab, setTab] = useState("overview");
+  const [isPending, startTransition] = useTransition();
+
+  return (
+    <div>
+      {PANELS.map((panel) => (
+        <button
+          key={panel.id}
+          onClick={() => startTransition(() => setTab(panel.id))}
+          disabled={isPending && tab !== panel.id}
+        >
+          {panel.label}
+        </button>
+      ))}
+      {isPending ? <p>Loading view…</p> : null}
+      <HeavyPanel id={tab} />
+    </div>
+  );
+}
+```
+
 ### Why was it introduced?
 
 Urgent input and heavy views shared one update pipeline. See [Concurrent](/notes/learn/react/concurrent).
@@ -92,6 +134,51 @@ function Catalog({ products }) {
         <ProductGrid products={products.filter((p) => p.name.includes(query))} />
       </div>
     </>
+  );
+}
+```
+
+```jsx runnable title="Product filter" category=performance
+import { useMemo, useState, useTransition } from "react";
+
+const PRODUCTS = Array.from({ length: 80 }, (_, i) => ({
+  id: String(i),
+  name: ["Mug", "Lamp", "Chair", "Desk", "Plant"][i % 5] + " " + (i + 1),
+}));
+
+export default function ProductFilter() {
+  const [input, setInput] = useState("");
+  const [query, setQuery] = useState("");
+  const [isPending, startTransition] = useTransition();
+  const visible = useMemo(
+    () => PRODUCTS.filter((p) => p.name.toLowerCase().includes(query.toLowerCase())),
+    [query],
+  );
+
+  if (input.toLowerCase() === "boom") {
+    throw new Error("Type something else — this is a preview error.");
+  }
+
+  return (
+    <div>
+      <input
+        value={input}
+        placeholder="Filter products (try boom for an error)"
+        onChange={(e) => {
+          const value = e.target.value;
+          setInput(value);
+          startTransition(() => setQuery(value));
+        }}
+      />
+      <p style={{ opacity: isPending ? 0.6 : 1 }}>
+        {visible.length} matches
+      </p>
+      <ul style={{ opacity: isPending ? 0.6 : 1 }}>
+        {visible.slice(0, 8).map((product) => (
+          <li key={product.id}>{product.name}</li>
+        ))}
+      </ul>
+    </div>
   );
 }
 ```
@@ -209,6 +296,40 @@ function Search({ items }) {
         ))}
       </ul>
     </>
+  );
+}
+```
+
+```jsx runnable title="Deferred search" category=performance
+import { useDeferredValue, useMemo, useState } from "react";
+
+const ITEMS = Array.from({ length: 60 }, (_, i) => ({
+  id: String(i),
+  name: ["Alpha", "Bravo", "Charlie", "Delta"][i % 4] + " " + (i + 1),
+}));
+
+export default function DeferredSearch() {
+  const [query, setQuery] = useState("");
+  const deferredQuery = useDeferredValue(query);
+  const stale = deferredQuery !== query;
+  const results = useMemo(
+    () => ITEMS.filter((item) => item.name.toLowerCase().includes(deferredQuery.toLowerCase())),
+    [deferredQuery],
+  );
+
+  return (
+    <div>
+      <input
+        value={query}
+        placeholder="Filter the list"
+        onChange={(e) => setQuery(e.target.value)}
+      />
+      <ul style={{ opacity: stale ? 0.6 : 1 }}>
+        {results.slice(0, 8).map((item) => (
+          <li key={item.id}>{item.name}</li>
+        ))}
+      </ul>
+    </div>
   );
 }
 ```

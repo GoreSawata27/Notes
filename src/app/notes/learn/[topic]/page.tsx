@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { NotesShell } from "@/components/notes/NotesShell";
 import { getLearningPage } from "@/lib/notes/load-notes";
 import { LEARNING_TOPICS } from "@/lib/notes/learning-topics";
+import { getTopicHub } from "@/lib/notes/topic-hubs";
 
 type Props = { params: Promise<{ topic: string }> };
 
@@ -33,7 +34,7 @@ export default async function LearningNotesPage({ params }: Props) {
       : id === "typescript"
         ? "Lessons first, then TypeScript types cheatsheet at the bottom."
         : id === "react"
-          ? "Fundamentals first (32 lessons). Open React Evolution in the sidebar for the React 16 → 19.3 reference."
+          ? "Fundamentals first (32 lessons). Expand a lesson to run marked JSX examples inline. React hub has interview prep and Evolution chapters."
           : undefined;
 
   return (
@@ -48,6 +49,7 @@ export default async function LearningNotesPage({ params }: Props) {
       nextHref={page.topic.navNext.href}
       nextLabel={page.topic.navNext.label}
       extraLinks={[
+        ...(getTopicHub(id) ? [{ href: `/notes/hubs/${id}`, label: `${page.topic.title} hub →` }] : []),
         { href: page.topic.interviewHref, label: "Interview Q&A →" },
         ...(page.topic.extraLinks ?? []),
       ]}

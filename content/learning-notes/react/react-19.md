@@ -58,6 +58,33 @@ function save(name) {
 
 `isPending` stays true until the async function finishes (and resulting renders commit).
 
+```jsx runnable title="Save display name" category=react-19
+import { useState, useTransition } from "react";
+
+export default function SaveName() {
+  const [name, setName] = useState("Ada");
+  const [saved, setSaved] = useState("Ada");
+  const [isPending, startTransition] = useTransition();
+
+  function save() {
+    startTransition(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      setSaved(name);
+    });
+  }
+
+  return (
+    <div>
+      <input value={name} onChange={(e) => setName(e.target.value)} />
+      <button onClick={save} disabled={isPending}>
+        {isPending ? "Saving…" : "Save"}
+      </button>
+      <p role="status">Saved as {saved}</p>
+    </div>
+  );
+}
+```
+
 ### Why was it introduced?
 
 Every product had the same pile: `isPending`, `error`, disable the button, ignore stale responses. Actions standardize that.
@@ -153,6 +180,32 @@ function BioForm() {
       <textarea name="bio" />
       <button disabled={isPending}>{isPending ? "Saving…" : "Save"}</button>
       <p>{state.message}</p>
+    </form>
+  );
+}
+```
+
+```jsx runnable title="Bio form action" category=react-19
+import { useActionState } from "react";
+
+async function updateBio(_prev, formData) {
+  const bio = String(formData.get("bio") || "").trim();
+  await new Promise((resolve) => setTimeout(resolve, 450));
+  if (bio.length < 8) return { ok: false, message: "Write at least 8 characters" };
+  return { ok: true, message: "Saved" };
+}
+
+export default function BioForm() {
+  const [state, formAction, isPending] = useActionState(updateBio, {
+    ok: true,
+    message: "",
+  });
+
+  return (
+    <form action={formAction}>
+      <textarea name="bio" rows={3} placeholder="Short bio" />
+      <button disabled={isPending}>{isPending ? "Saving…" : "Save"}</button>
+      {state.message ? <p role="status">{state.message}</p> : null}
     </form>
   );
 }
@@ -287,6 +340,30 @@ function Like({ likes, onLike }) {
   }
 
   return <button onClick={like}>{optimisticLikes} likes</button>;
+}
+```
+
+```jsx runnable title="Optimistic like" category=react-19
+import { useOptimistic, useState, useTransition } from "react";
+
+export default function LikeButton() {
+  const [likes, setLikes] = useState(42);
+  const [optimisticLikes, addOptimistic] = useOptimistic(likes);
+  const [isPending, startTransition] = useTransition();
+
+  function like() {
+    startTransition(async () => {
+      addOptimistic(likes + 1);
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      setLikes((n) => n + 1);
+    });
+  }
+
+  return (
+    <button onClick={like} disabled={isPending}>
+      {optimisticLikes} likes
+    </button>
+  );
 }
 ```
 

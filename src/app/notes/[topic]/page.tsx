@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { NotesShell } from "@/components/notes/NotesShell";
 import { getTopicPage } from "@/lib/notes/load-notes";
+import { getTopicHub } from "@/lib/notes/topic-hubs";
 import { NOTE_TOPICS } from "@/lib/notes/topics";
 
 type Props = { params: Promise<{ topic: string }> };
@@ -33,6 +34,9 @@ export default async function TopicNotesPage({ params }: Props) {
       nextHref={page.topic.navNext.href}
       nextLabel={page.topic.navNext.label}
       extraLinks={[
+        ...(getTopicHub(id)
+          ? [{ href: `/notes/hubs/${id}`, label: `${page.topic.title} hub →` }]
+          : []),
         ...(page.topic.learningHref ? [{ href: page.topic.learningHref, label: "Learning notes →" }] : []),
         ...(page.topic.extraLinks ?? []),
       ]}

@@ -37,6 +37,52 @@ function flushParagraph(parts: MdBlock[], buffer: string[]) {
   if (text) parts.push({ type: "p", text });
 }
 
+export function parseFenceInfo(info: string): {
+  lang?: string;
+  runnable?: boolean;
+  autoRun?: boolean;
+  title?: string;
+  category?: string;
+} {
+  if (!info) return {};
+  const tokens: string[] = [];
+  const tokenRe = /([^\s="]+="[^"]*"|[^\s="]+=[^\s]+|[^\s]+)/g;
+  let match: RegExpExecArray | null;
+  while ((match = tokenRe.exec(info))) tokens.push(match[1]);
+
+  const meta: {
+    lang?: string;
+    runnable?: boolean;
+    autoRun?: boolean;
+    title?: string;
+    category?: string;
+  } = {};
+
+  for (const token of tokens) {
+    const eq = token.indexOf("=");
+    if (eq > 0) {
+      const key = token.slice(0, eq).toLowerCase();
+      let value = token.slice(eq + 1);
+      if (value.startsWith('"') && value.endsWith('"')) value = value.slice(1, -1);
+      if (key === "title") meta.title = value;
+      if (key === "category") meta.category = value;
+      continue;
+    }
+    const lower = token.toLowerCase();
+    if (lower === "runnable") {
+      meta.runnable = true;
+      continue;
+    }
+    if (lower === "autorun") {
+      meta.autoRun = true;
+      continue;
+    }
+    if (!meta.lang) meta.lang = token;
+  }
+
+  return meta;
+}
+
 export function parseBlocks(block: string): MdBlock[] {
   return parseStructuredText(block, { allowFences: true });
 }
@@ -57,7 +103,7 @@ function parseStructuredText(block: string, options: { allowFences: boolean }): 
 
     if (options.allowFences && line.startsWith("```")) {
       flushParagraph(parts, paragraph);
-      const lang = line.slice(3).trim() || undefined;
+      const meta = parseFenceInfo(line.slice(3).trim());
       i += 1;
       const codeLines: string[] = [];
       while (i < lines.length && !lines[i].startsWith("```")) {
@@ -65,7 +111,7 @@ function parseStructuredText(block: string, options: { allowFences: boolean }): 
         i += 1;
       }
       if (i < lines.length && lines[i].startsWith("```")) i += 1;
-      parts.push({ type: "code", code: codeLines.join("\n"), lang });
+      parts.push({ type: "code", code: codeLines.join("\n"), ...meta });
       continue;
     }
 

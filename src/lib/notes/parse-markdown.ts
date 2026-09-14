@@ -4,6 +4,10 @@ import type { MdBlock, NoteSection, Question, QuestionTag } from "./types";
 const TAG_RE = /\[(must-know|infosys|bajaj)\]/gi;
 const VERSION_TAG_RE = /\[(React [\d.]+|experimental|RSC|framework)\]/gi;
 
+function normalizeCompareText(text: string): string {
+  return text.toLowerCase().replace(/\s+/g, " ").trim();
+}
+
 export function extractVersionBadges(title: string): { text: string; badges: string[] } {
   const badges = [...title.matchAll(VERSION_TAG_RE)].map((match) => match[1]);
   const text = title.replace(VERSION_TAG_RE, "").replace(/\s+/g, " ").trim();
@@ -46,10 +50,13 @@ export function parseMarkdown(md: string): NoteSection[] {
     answerRaw = answerRaw.replace(/^---\s*$/gm, "").trim();
 
     const firstPara = answerRaw.split("\n\n")[0] ?? "";
-    const say = firstPara.replace(/\n/g, " ").trim();
+    let say = firstPara.replace(/\n/g, " ").trim();
     const rest = answerRaw.slice(firstPara.length).trim();
 
     currentQ.shortDef = defMatch ? defMatch[1].replace(/^---\s*$/gm, "").trim() : "";
+    if (currentQ.shortDef && say && normalizeCompareText(say) === normalizeCompareText(currentQ.shortDef)) {
+      say = "";
+    }
     currentQ.say = say;
     currentQ.extra = rest ? parseBlocks(rest) : [];
     currentQ.followUp = followMatch ? followMatch[1].replace(/^---\s*$/gm, "").trim() : "";
@@ -137,10 +144,13 @@ export function parseLearningMarkdown(md: string): NoteSection[] {
       /^#{1,3}\s/.test(lead) ||
       /^[-*] /.test(lead) ||
       /^\d+\. /.test(lead);
-    const say = structuredLead ? "" : lead.replace(/\n/g, " ").trim();
+    let say = structuredLead ? "" : lead.replace(/\n/g, " ").trim();
     const rest = structuredLead ? explainRaw : explainRaw.slice(firstPara.length).trim();
 
     currentQ.shortDef = takeawayMatch ? takeawayMatch[1].replace(/^---\s*$/gm, "").trim() : "";
+    if (currentQ.shortDef && say && normalizeCompareText(say) === normalizeCompareText(currentQ.shortDef)) {
+      say = "";
+    }
     currentQ.say = say;
     currentQ.extra = rest ? parseBlocks(rest) : [];
     currentQ.followUp = tipMatch ? tipMatch[1].replace(/^---\s*$/gm, "").trim() : "";

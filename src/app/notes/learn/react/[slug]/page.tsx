@@ -43,6 +43,7 @@ export default async function ReactEvolutionPage({ params }: Props) {
       nextHref={`/notes/learn/react/${neighbors.next.slug}`}
       nextLabel={neighbors.next.title}
       extraLinks={[
+        { href: "/notes/hubs/react", label: "React hub →" },
         { href: "/notes/learn/react", label: "React fundamentals →" },
         { href: "/notes/react", label: "Interview Q&A →" },
       ]}

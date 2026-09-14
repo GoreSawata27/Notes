@@ -1,10 +1,18 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { highlightCode } from "@/lib/theme/highlight";
 import { useTheme } from "./ThemeProvider";
 
-export function CodeBlock({ code, lang }: { code: string; lang?: string }) {
+export function CodeBlock({
+  code,
+  lang,
+  actions,
+}: {
+  code: string;
+  lang?: string;
+  actions?: ReactNode;
+}) {
   const { theme } = useTheme();
   const [html, setHtml] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
@@ -38,9 +46,12 @@ export function CodeBlock({ code, lang }: { code: string; lang?: string }) {
     <div className="code-block">
       <div className="code-block-header">
         <span className="code-block-lang">{label}</span>
-        <button type="button" className="code-block-copy" onClick={handleCopy}>
-          {copied ? "Copied" : "Copy"}
-        </button>
+        <span className="code-block-actions">
+          {actions}
+          <button type="button" className="code-block-copy" onClick={handleCopy}>
+            {copied ? "Copied" : "Copy"}
+          </button>
+        </span>
       </div>
       <div className="code-block-body">
         {html ? (

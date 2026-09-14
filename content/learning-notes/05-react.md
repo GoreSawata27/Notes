@@ -292,10 +292,10 @@ Keys must be **stable, unique among siblings**. Index-as-key is acceptable only 
 
 **Explain:** Destructure `[value, setValue] = useState(initialValue)`. The initial value is used only on the first render. Functional updates receive the previous state and avoid stale closures.
 
-```jsx
+```jsx runnable autoRun title="Signup steps" category=state
 import { useState } from "react";
 
-function SignupForm() {
+export default function SignupForm() {
   const [email, setEmail] = useState("");
   const [step, setStep] = useState(1);
 
@@ -908,8 +908,10 @@ Split **state** and **dispatch** into separate contexts if consumers only need d
 
 **Explain:** React uses keys during reconciliation to match old and new element instances. Wrong keys cause lost focus, wrong animation, and preserved state attached to the wrong row.
 
-```jsx
-function TodoApp() {
+```jsx runnable title="Todo list keys" category=lists
+import { useState } from "react";
+
+export default function TodoApp() {
   const [todos, setTodos] = useState([
     { id: "a1", text: "Learn JSX", done: false },
     { id: "b2", text: "Learn hooks", done: false },
@@ -958,10 +960,13 @@ Never `key={Math.random()}` — keys must be stable for a given item across rend
 
 **Explain:** Native form submission reloads the page; React apps intercept submit, validate, then call APIs or update client state.
 
-```jsx
-function LoginForm({ onSubmit }) {
+```jsx runnable title="Login validation" category=forms
+import { useState } from "react";
+
+export default function LoginForm() {
   const [values, setValues] = useState({ email: "", password: "" });
   const [errors, setErrors] = useState({});
+  const [done, setDone] = useState(false);
 
   function validate(v) {
     const next = {};
@@ -980,9 +985,11 @@ function LoginForm({ onSubmit }) {
     const nextErrors = validate(values);
     setErrors(nextErrors);
     if (Object.keys(nextErrors).length === 0) {
-      onSubmit(values);
+      setDone(true);
     }
   }
+
+  if (done) return <p role="status">Signed in as {values.email}</p>;
 
   return (
     <form onSubmit={handleSubmit} noValidate>
@@ -1349,6 +1356,38 @@ function NewsletterForm() {
       {state.message && (
         <p role="status">{state.message}</p>
       )}
+    </form>
+  );
+}
+```
+
+The notes preview cannot call `fetch`. This client-only version uses a delay so you can run the same Action pattern here.
+
+```jsx runnable title="Newsletter action" category=forms
+import { useActionState } from "react";
+
+async function subscribe(_prev, formData) {
+  const email = String(formData.get("email") || "");
+  await new Promise((resolve) => setTimeout(resolve, 400));
+  if (!email.includes("@")) {
+    return { ok: false, message: "Valid email required" };
+  }
+  return { ok: true, message: `Subscribed ${email}` };
+}
+
+export default function NewsletterForm() {
+  const [state, formAction, isPending] = useActionState(subscribe, {
+    ok: false,
+    message: "",
+  });
+
+  return (
+    <form action={formAction}>
+      <input name="email" type="email" placeholder="you@example.com" />
+      <button disabled={isPending}>
+        {isPending ? "Subscribing…" : "Subscribe"}
+      </button>
+      {state.message ? <p role="status">{state.message}</p> : null}
     </form>
   );
 }

@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { ThemeProvider } from "@/components/theme/ThemeProvider";
-import { ThemeSwitcher } from "@/components/theme/ThemeSwitcher";
+import { AppShell } from "@/components/theme/AppShell";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -30,22 +29,19 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      data-theme="carbon-enterprise"
+      data-theme="notion-studio"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
       suppressHydrationWarning
     >
       <head>
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var t=localStorage.getItem("notes-theme");if(t)document.documentElement.dataset.theme=t}catch(e){}})();`,
+            __html: `(function(){try{var t=localStorage.getItem("notes-theme");if(t==="notion-studio"||t==="vercel-midnight")document.documentElement.dataset.theme=t}catch(e){}})();`,
           }}
         />
       </head>
-      <body className="min-h-full flex flex-col bg-background text-foreground">
-        <ThemeProvider>
-          {children}
-          <ThemeSwitcher />
-        </ThemeProvider>
+      <body className="min-h-full flex flex-col bg-background font-sans text-foreground">
+        <AppShell>{children}</AppShell>
       </body>
     </html>
   );

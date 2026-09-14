@@ -133,22 +133,12 @@ export const NOTE_TOPICS: TopicMeta[] = [
     id: "infosys",
     category: "company",
     file: "10-infosys-prep.md",
-    title: "Infosys Prep",
+    title: "Company Prep",
     pill: "Company prep",
-    description: "ReactJS Developer · Pune · Sep 5 2026 · Sawata Gore",
+    description: "React interview prep for company screening rounds.",
     hubBadge: "Infosys",
-    navNext: { href: "/notes/bajaj", label: "Bajaj prep" },
+    navNext: { href: "/notes/git", label: "Git notes" },
     extraLinks: [{ href: "/notes/git", label: "Git notes →" }],
-  },
-  {
-    id: "bajaj",
-    category: "company",
-    file: "11-bajaj-prep.md",
-    title: "Bajaj Finserv Prep",
-    pill: "Company prep",
-    description: "Next.js Developer · 3–6 YOE · Full-stack frontend",
-    hubBadge: "Bajaj Finserv",
-    navNext: { href: "/notes/infosys", label: "Infosys prep" },
   },
 ];
 
@@ -165,7 +155,7 @@ export const STUDY_PLAN = [
   { week: "6", topics: "Redux + React Query", focus: "Learning tracks: client vs server state" },
   { week: "7", topics: "Jest + RTL + Git", focus: "Testing and version control learning" },
   { week: "8", topics: "Realtime", focus: "WebSocket, socket.io, SSE, production hooks" },
-  { week: "9", topics: "Infosys + Bajaj prep", focus: "Live coding, Next.js scenarios" },
+  { week: "9", topics: "Infosys prep", focus: "Live coding, Next.js scenarios" },
   { week: "10", topics: "Full revision", focus: "Must-know interview + learning review" },
 ] as const;
 

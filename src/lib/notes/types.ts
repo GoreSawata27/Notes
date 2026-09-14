@@ -1,10 +1,35 @@
 export type MdBlock =
   | { type: "p"; text: string }
   | { type: "h"; text: string }
-  | { type: "code"; code: string; lang?: string }
+  | {
+      type: "code";
+      code: string;
+      lang?: string;
+      runnable?: boolean;
+      autoRun?: boolean;
+      title?: string;
+      category?: string;
+    }
   | { type: "ul"; items: string[] }
   | { type: "ol"; items: string[] }
   | { type: "table"; headers: string[]; rows: string[][] };
+
+export type TopicHubResource = {
+  id: string;
+  title: string;
+  description: string;
+  href: string;
+};
+
+export type TopicHubMeta = {
+  id: string;
+  title: string;
+  href: string;
+  description: string;
+  excludeFromInterview: boolean;
+  excludeFromLearning: boolean;
+  resources: TopicHubResource[];
+};
 
 export type QuestionTag = "must-know" | "infosys" | "bajaj";
 

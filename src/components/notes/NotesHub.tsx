@@ -2,7 +2,7 @@ import Link from "next/link";
 import { STUDY_PLAN } from "@/lib/notes/topics";
 import type { HubCard } from "@/lib/notes/types";
 
-function CardGrid({ cards, company }: { cards: HubCard[]; company?: boolean }) {
+export function CardGrid({ cards, company }: { cards: HubCard[]; company?: boolean }) {
   return (
     <div className={company ? "cards cards-company" : "cards"}>
       {cards.map((card) => (
@@ -23,12 +23,14 @@ function CardGrid({ cards, company }: { cards: HubCard[]; company?: boolean }) {
 
 export function NotesHub({
   totalQuestions,
+  hubs,
   interview,
   learning,
   company,
   playground,
 }: {
   totalQuestions: number;
+  hubs: HubCard[];
   interview: HubCard[];
   learning: HubCard[];
   company: HubCard[];
@@ -45,11 +47,26 @@ export function NotesHub({
         machine-coding demos.
       </p>
 
-      <h2 className="hub-section-title">Interview Prep</h2>
-      <CardGrid cards={interview} />
+      {hubs.length > 0 ? (
+        <>
+          <h2 className="hub-section-title">Learning hubs</h2>
+          <CardGrid cards={hubs} />
+        </>
+      ) : null}
 
-      <h2 className="hub-section-title">Learning Notes</h2>
-      <CardGrid cards={learning} />
+      {interview.length > 0 ? (
+        <>
+          <h2 className="hub-section-title">Interview Prep</h2>
+          <CardGrid cards={interview} />
+        </>
+      ) : null}
+
+      {learning.length > 0 ? (
+        <>
+          <h2 className="hub-section-title">Learning Notes</h2>
+          <CardGrid cards={learning} />
+        </>
+      ) : null}
 
       <h2 className="hub-section-title hub-section-company">Company Prep</h2>
       <CardGrid cards={company} company />
@@ -79,7 +96,7 @@ export function NotesHub({
         </table>
       </section>
       <p className="hub-foot">
-        Interview Q&amp;A from Markdown · Learning lessons as cards · JS snippets as cheatsheets ·
+        Each topic hub has learning notes and interview Q&amp;A · JS snippets as cheatsheets ·
         Practice and Learn stay interactive
       </p>
     </div>

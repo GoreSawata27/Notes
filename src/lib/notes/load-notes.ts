@@ -8,6 +8,7 @@ import { blocksToSearchText, parseCommentBlocks, slugify, splitLeadAndRest } fro
 import { parseMarkdown, parseProfile, parseLearningMarkdown } from "./parse-markdown";
 import { parseSnippetSource } from "./parse-snippets";
 import { LEARNING_TOPICS, getLearningTopic } from "./learning-topics";
+import { TOPIC_HUBS, getTopicHub, isExcludedFromInterview, isExcludedFromLearning } from "./topic-hubs";
 import { NOTE_TOPICS, getTopic } from "./topics";
 import type { HubCard, ListItem, ListSection, MdBlock, Question, SnippetCard } from "./types";
 
@@ -206,20 +207,19 @@ export const getHubData = cache(() => {
       company: topic.category === "company",
     };
     if (topic.category === "company") company.push(card);
-    else interview.push(card);
+    else if (!isExcludedFromInterview(topic.id)) interview.push(card);
   }
 
   for (const topic of LEARNING_TOPICS) {
     const page = getLearningPage(topic.id);
     if (!page) continue;
+    if (isExcludedFromLearning(topic.id)) continue;
 
     let meta = `${page.lessonCount} lessons`;
     if (topic.id === "javascript") {
       meta = `${page.lessonCount} lessons · ${page.conceptCount} concepts · ${page.methodCount} methods`;
     } else if (topic.id === "typescript") {
       meta = `${page.lessonCount} lessons · ${page.snippetCount} snippets`;
-    } else if (topic.id === "react") {
-      meta = `${page.lessonCount} lessons · ${REACT_EVOLUTION.length} evolution chapters`;
     }
 
     learning.push({
@@ -229,6 +229,29 @@ export const getHubData = cache(() => {
       meta,
     });
   }
+
+  const hubs: HubCard[] = TOPIC_HUBS.map((hub) => {
+    const interviewPage = getTopicPage(hub.id);
+    const learningPage = getLearningPage(hub.id);
+    const lessons = learningPage?.lessonCount ?? 0;
+    const questions = interviewPage?.questionCount ?? 0;
+    const parts = [`${lessons} lessons`, `${questions} questions`];
+    if (hub.id === "javascript" && learningPage) {
+      parts.push(`${learningPage.conceptCount} concepts`, `${learningPage.methodCount} methods`);
+    }
+    if (hub.id === "typescript" && learningPage) {
+      parts.push(`${learningPage.snippetCount} snippets`);
+    }
+    if (hub.id === "react") {
+      parts.push(`${REACT_EVOLUTION.length} evolution chapters`);
+    }
+    return {
+      href: hub.href,
+      title: hub.title,
+      description: hub.description,
+      meta: parts.join(" · "),
+    };
+  });
 
   const playground: HubCard[] = [
     {
@@ -251,5 +274,29 @@ export const getHubData = cache(() => {
     },
   ];
 
-  return { totalQuestions, interview, learning, company, playground };
+  return { totalQuestions, hubs, interview, learning, company, playground };
+});
+
+export const getHubResources = cache((topicId: string) => {
+  const hub = getTopicHub(topicId);
+  if (!hub) return [];
+  const interviewPage = getTopicPage(topicId);
+  const learningPage = getLearningPage(topicId);
+  return hub.resources.map((resource) => {
+    let meta = "";
+    if (resource.id === "learning") {
+      meta = `${learningPage?.lessonCount ?? 0} lessons`;
+      if (topicId === "javascript" && learningPage) {
+        meta = `${learningPage.lessonCount} lessons · ${learningPage.conceptCount} concepts · ${learningPage.methodCount} methods`;
+      }
+      if (topicId === "typescript" && learningPage) {
+        meta = `${learningPage.lessonCount} lessons · ${learningPage.snippetCount} snippets`;
+      }
+    }
+    if (resource.id === "interview") meta = `${interviewPage?.questionCount ?? 0} questions`;
+    if (resource.id === "evolution") meta = `${REACT_EVOLUTION.length} chapters`;
+    if (resource.id === "next-demos") meta = "Rendering track";
+    if (resource.id === "redux-playground") meta = "6 examples";
+    return { ...resource, meta };
+  });
 });
