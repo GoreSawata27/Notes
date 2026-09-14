@@ -10,16 +10,13 @@ interface TodoType {
 
 export default function TodoList() {
   const [todo, setTodo] = useState<string>("");
-  const [todoList, setTodoList] = useState<TodoType[]>([]);
+  const [todoList, setTodoList] = useState<TodoType[]>(() => {
+    if (typeof window === "undefined") return [];
+    const getStoredData = localStorage.getItem("todoList");
+    return getStoredData ? (JSON.parse(getStoredData) as TodoType[]) : [];
+  });
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [editId, setEditId] = useState<number | null>(null);
-
-  useEffect(() => {
-    const getStoredData = localStorage.getItem("todoList");
-    if (getStoredData) {
-      setTodoList(JSON.parse(getStoredData) as TodoType[]);
-    }
-  }, []);
 
   const handleAddTodo = () => {
     if (!todo) return alert("Please add a todo");

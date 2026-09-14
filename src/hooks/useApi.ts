@@ -8,10 +8,10 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 interface DecodedToken {
   exp?: number;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
-export function useApi<T = any>() {
+export function useApi<T = unknown>() {
   const [data, setData] = useState<T | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -21,7 +21,7 @@ export function useApi<T = any>() {
     async (
       method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE",
       endpoint: string,
-      body?: any,
+      body?: unknown,
       config?: AxiosRequestConfig,
     ) => {
       setIsLoading(true);
@@ -43,7 +43,7 @@ export function useApi<T = any>() {
           return Promise.reject("Session expired. Please login again.");
         }
 
-        const headers: any = {
+        const headers: Record<string, string> = {
           Authorization: `Bearer ${token}`,
         };
 
@@ -63,8 +63,8 @@ export function useApi<T = any>() {
 
         setData(res.data);
         return res.data;
-      } catch (err: any) {
-        setError(err.message || "API request failed");
+      } catch (err: unknown) {
+        setError(err instanceof Error ? err.message : "API request failed");
         throw err;
       } finally {
         setIsLoading(false);

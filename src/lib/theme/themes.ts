@@ -27,4 +27,11 @@ export function getShikiTheme(themeId: ThemeId): string {
   return THEMES.find((theme) => theme.id === themeId)?.shikiTheme ?? "github-light";
 }
 
+/** Apply data-theme and Tailwind `dark` class (Learn demos use dark: utilities). */
+export function applyDocumentTheme(theme: ThemeId) {
+  if (typeof document === "undefined") return;
+  document.documentElement.dataset.theme = theme;
+  document.documentElement.classList.toggle("dark", theme === DARK_THEME);
+}
+
 export const SHIKI_THEMES = [...new Set(THEMES.map((theme) => theme.shikiTheme))];

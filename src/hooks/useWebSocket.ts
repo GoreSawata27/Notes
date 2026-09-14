@@ -3,15 +3,16 @@ import { useEffect, useRef, useState } from "react";
 
 interface WSMessage {
   type?: string;
-  data?: any;
-  [key: string]: any;
+  data?: unknown;
+  [key: string]: unknown;
 }
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export function useWebSocket(url: string, token: string | null, onMessage: (msg: WSMessage) => void) {
   const wsRef = useRef<WebSocket | null>(null);
-  const [status, setStatus] = useState<"idle" | "connecting" | "open" | "closed">("idle");
+  const [connectionStatus, setConnectionStatus] = useState<"idle" | "connecting" | "open" | "closed">("idle");
+  const status = token ? connectionStatus : "idle";
   const retryDelayRef = useRef(1000);
   const reconnectTimerRef = useRef<number | null>(null);
   const isMountedRef = useRef(true);
@@ -24,7 +25,6 @@ export function useWebSocket(url: string, token: string | null, onMessage: (msg:
         wsRef.current.close();
         wsRef.current = null;
       }
-      setStatus("idle");
       return;
     }
 
@@ -33,13 +33,13 @@ export function useWebSocket(url: string, token: string | null, onMessage: (msg:
     function connect() {
       if (!token || !isMountedRef.current) return;
 
-      setStatus("connecting");
+      setConnectionStatus("connecting");
       const ws = new WebSocket(fullUrl);
       wsRef.current = ws;
 
       ws.onopen = () => {
         if (!isMountedRef.current) return;
-        setStatus("open");
+        setConnectionStatus("open");
         retryDelayRef.current = 1000;
       };
 
@@ -60,7 +60,7 @@ export function useWebSocket(url: string, token: string | null, onMessage: (msg:
       ws.onclose = (event) => {
         if (!isMountedRef.current) return;
 
-        setStatus("closed");
+        setConnectionStatus("closed");
         wsRef.current = null;
 
         if (!token) {
@@ -91,7 +91,7 @@ export function useWebSocket(url: string, token: string | null, onMessage: (msg:
         wsRef.current = null;
       }
 
-      setStatus("idle");
+      setConnectionStatus("idle");
       retryDelayRef.current = 1000;
     };
   }, [url, token]);

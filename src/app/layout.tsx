@@ -36,7 +36,7 @@ export default function RootLayout({
       <head>
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var t=localStorage.getItem("notes-theme");if(t==="notion-studio"||t==="vercel-midnight")document.documentElement.dataset.theme=t}catch(e){}})();`,
+            __html: `(function(){try{var t=localStorage.getItem("notes-theme");if(t==="notion-studio"||t==="vercel-midnight"){document.documentElement.dataset.theme=t;document.documentElement.classList.toggle("dark",t==="vercel-midnight")}}catch(e){}})();`,
           }}
         />
       </head>

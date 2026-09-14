@@ -17,10 +17,11 @@ export function InteractiveCodeBlock({
 }) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const autoRanRef = useRef(false);
-  const [ready, setReady] = useState(false);
+  const [frameKey, setFrameKey] = useState(0);
+  const [readyKey, setReadyKey] = useState<number | null>(null);
+  const ready = readyKey === frameKey;
   const [running, setRunning] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [frameKey, setFrameKey] = useState(0);
   const instanceId = useId();
 
   useEffect(() => {
@@ -31,7 +32,7 @@ export function InteractiveCodeBlock({
 
     function onMessage(event: MessageEvent) {
       if (event.data?.type === "sandbox-ready") {
-        if (isOurFrame(event)) setReady(true);
+        if (isOurFrame(event)) setReadyKey(frameKey);
         return;
       }
       if (!isOurFrame(event)) return;
@@ -72,7 +73,7 @@ export function InteractiveCodeBlock({
     autoRanRef.current = false;
     setError(null);
     setRunning(false);
-    setReady(false);
+    setReadyKey(null);
     setFrameKey((value) => value + 1);
   }
 
@@ -103,7 +104,6 @@ export function InteractiveCodeBlock({
           className="example-preview-frame"
           src="/preview/sandbox"
           sandbox="allow-scripts allow-same-origin"
-          onLoad={() => setReady(true)}
         />
         {!running && !error ? (
           <p className="example-preview-hint">Click Run to render this example.</p>

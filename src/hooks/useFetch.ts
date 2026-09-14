@@ -9,7 +9,9 @@ export function useFetch<T>(url: string, _deps: unknown[] = []) {
 
   useEffect(() => {
     let cancelled = false;
-    setLoading(true);
+    queueMicrotask(() => {
+      if (!cancelled) setLoading(true);
+    });
     fetch(url)
       .then((res) => {
         if (!res.ok) throw new Error(res.statusText);

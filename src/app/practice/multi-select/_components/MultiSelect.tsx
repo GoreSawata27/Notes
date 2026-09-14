@@ -112,16 +112,15 @@ export default function App() {
       {/* Dropdown */}
       {openDropdown && (
         <ul
+          className="border border-border bg-surface-elevated"
           style={{
             listStyle: "none",
             padding: 0,
             margin: 0,
-            border: "1px solid #ccc",
             maxHeight: "200px",
             overflowY: "auto",
             position: "absolute",
             width: "100%",
-            background: "#fff",
             zIndex: 10,
           }}
         >

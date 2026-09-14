@@ -1,7 +1,7 @@
 "use client";
 
 // Q : Show sample number in input box based on country code selection
-import { useEffect, useState, type ChangeEvent } from "react";
+import { useState, type ChangeEvent } from "react";
 
 interface countryOptions {
   country_code: string;
@@ -16,16 +16,8 @@ interface phoneBookProps {
 }
 
 export default function PhoneBook({ options }: phoneBookProps) {
-  const [countryCode, setCountryCode] = useState<string>("");
-  const [placeholderSample, setPlaceHolderSample] = useState<string>("");
-
-  useEffect(() => {
-    if (options.length > 0) {
-      const defaultCountry = options[0];
-      setCountryCode(defaultCountry.country_code);
-      setPlaceHolderSample(defaultCountry.sample);
-    }
-  }, [options]);
+  const [countryCode, setCountryCode] = useState(() => options[0]?.country_code ?? "");
+  const [placeholderSample, setPlaceHolderSample] = useState(() => options[0]?.sample ?? "");
 
   const handleChange = (e: ChangeEvent<HTMLSelectElement>) => {
     const code = e.target.value;

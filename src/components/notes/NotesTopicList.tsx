@@ -102,6 +102,7 @@ export function NotesTopicList({
           className="search"
           type="search"
           placeholder={searchPlaceholder}
+          aria-label={searchPlaceholder}
           value={term}
           onChange={(event) => setTerm(event.target.value)}
         />

@@ -19,7 +19,6 @@ export function CodeBlock({
 
   useEffect(() => {
     let cancelled = false;
-    setHtml(null);
 
     highlightCode(code, lang, theme).then((result) => {
       if (!cancelled) setHtml(result);

@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Runnable snippet files for notes (not app source)
+    "content/**",
   ]),
 ]);
 
