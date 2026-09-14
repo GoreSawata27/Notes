@@ -3,6 +3,7 @@ import path from "node:path";
 import { cache } from "react";
 import { PRACTICE_ROUTES } from "@/lib/practice-routes";
 import { JS_CONCEPTS, JS_METHODS } from "./js-catalog";
+import { REACT_EVOLUTION, getReactChapter } from "./react-catalog";
 import { blocksToSearchText, parseCommentBlocks, slugify, splitLeadAndRest } from "./markdown";
 import { parseMarkdown, parseProfile, parseLearningMarkdown } from "./parse-markdown";
 import { parseSnippetSource } from "./parse-snippets";
@@ -24,12 +25,14 @@ function questionToItem(question: Question): ListItem {
     num: question.num,
     title: question.text,
     badge: question.tag || (question.mustKnow ? "must-know" : undefined),
+    versionBadges: question.versionBadges,
     searchText: [
       question.text,
       question.shortDef,
       question.say,
       question.followUp,
       question.mistake,
+      (question.versionBadges ?? []).join(" "),
       blocksToSearchText(question.extra),
     ].join(" "),
     shortDef: question.shortDef,
@@ -151,6 +154,21 @@ export const getLearningPage = cache((id: string) => {
   };
 });
 
+export const getReactReferencePage = cache((slug: string) => {
+  const entry = getReactChapter(slug);
+  if (!entry) return null;
+  const raw = readContentFile(path.join("learning-notes", "react", entry.file));
+  const { profile, body } = parseProfile(raw);
+  const noteSections = parseLearningMarkdown(body);
+  const sections: ListSection[] = noteSections.map((section) => ({
+    id: section.id,
+    title: section.title,
+    items: section.questions.map(questionToItem),
+  }));
+  const lessonCount = sections.reduce((sum, section) => sum + section.items.length, 0);
+  return { entry, profile, sections, lessonCount };
+});
+
 export const getSnippetPage = cache((files: string[], sectionTitles?: string[]) => {
   const sections: ListSection[] = files.map((file, fileIndex) => {
     const cards = parseSnippetSource(readContentFile(file));
@@ -200,6 +218,8 @@ export const getHubData = cache(() => {
       meta = `${page.lessonCount} lessons · ${page.conceptCount} concepts · ${page.methodCount} methods`;
     } else if (topic.id === "typescript") {
       meta = `${page.lessonCount} lessons · ${page.snippetCount} snippets`;
+    } else if (topic.id === "react") {
+      meta = `${page.lessonCount} lessons · ${REACT_EVOLUTION.length} evolution chapters`;
     }
 
     learning.push({

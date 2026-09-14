@@ -112,6 +112,27 @@
   color: var(--text);
 }
 
+.notes-app .nav-link.current {
+  background: var(--panel-active);
+  color: var(--text);
+  border-color: var(--line);
+}
+
+.notes-app .chapter-nav {
+  margin: 0 0 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.notes-app .chapter-nav-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 0.15rem 0.7rem 0.4rem;
+}
+
 .notes-app .nav-link .n {
   color: var(--accent);
   font-weight: 600;
@@ -301,6 +322,7 @@
   color: var(--muted-foreground);
   font-size: 0.93rem;
   line-height: 1.6;
+  overflow-x: auto;
 }
 
 .notes-app .answer p {
@@ -368,6 +390,26 @@
   margin-left: 0.35rem;
 }
 
+.notes-app .pill-version {
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  border-color: color-mix(in srgb, var(--accent) 25%, transparent);
+  margin-left: 0.35rem;
+  text-transform: none;
+  letter-spacing: 0.01em;
+}
+
+.notes-app .md-link {
+  color: var(--accent-2);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.notes-app .md-link:hover {
+  color: var(--text);
+}
+
 .notes-app .profile-panel {
   border: 1px solid var(--line);
   background: linear-gradient(160deg, var(--profile-from), var(--profile-to) 70%);
@@ -377,6 +419,7 @@
   font-size: 0.93rem;
   line-height: 1.6;
   color: var(--muted-foreground);
+  overflow-x: auto;
 }
 
 .notes-app .profile-panel p {
@@ -387,6 +430,20 @@
 .notes-app .profile-panel ol {
   margin: 0.35rem 0;
   padding-left: 1.25rem;
+}
+
+.notes-app .profile-panel table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  margin: 0.55rem 0;
+}
+
+.notes-app .profile-panel th,
+.notes-app .profile-panel td {
+  border: 1px solid var(--line);
+  padding: 0.4rem 0.5rem;
+  text-align: left;
 }
 
 .notes-app .profile-panel strong {

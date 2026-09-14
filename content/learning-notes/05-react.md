@@ -2,6 +2,14 @@
 
 A progressive, hands-on guide to React — from the mental model and JSX through hooks, composition, performance, React 19 features, and TypeScript patterns. Each lesson builds on the last. Read the takeaway first, study the explanation and code, then try the exercise in a small Vite + React project or [StackBlitz](https://stackblitz.com/).
 
+## Profile
+
+This page is the **fundamentals track** (32 lessons). After you can build components, hooks, and forms, continue in **[React Evolution](/notes/learn/react/evolution)** — a React 16 → 19.3 reference covering Fiber, concurrent rendering, Actions, migrations, and recent 19.x APIs.
+
+- Start here if you are learning React.
+- Open [React Evolution](/notes/learn/react/evolution) if you already know hooks and want version-by-version depth.
+- Interview-style Q&A lives at [React notes](/notes/react).
+
 ---
 
 ## Mental model & JSX

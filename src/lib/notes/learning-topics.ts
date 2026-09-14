@@ -56,9 +56,11 @@ export const LEARNING_TOPICS: LearningTopicMeta[] = [
     file: "05-react.md",
     title: "React",
     pill: "UI library mastery",
-    description: "Components, hooks, state, effects, performance, composition patterns, and React 19 basics.",
+    description:
+      "Components, hooks, state, effects, performance, composition patterns, React 19 basics, and a React 16–19.3 evolution reference.",
     interviewHref: "/notes/react",
     navNext: { href: "/notes/learn/nextjs", label: "Next.js learning" },
+    extraLinks: [{ href: "/notes/learn/react/evolution", label: "React Evolution →" }],
   },
   {
     id: "nextjs",

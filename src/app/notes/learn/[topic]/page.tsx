@@ -32,7 +32,9 @@ export default async function LearningNotesPage({ params }: Props) {
       ? "Lessons first, then JS Concepts and Methods cheatsheets below."
       : id === "typescript"
         ? "Lessons first, then TypeScript types cheatsheet at the bottom."
-        : undefined;
+        : id === "react"
+          ? "Fundamentals first (32 lessons). Open React Evolution in the sidebar for the React 16 → 19.3 reference."
+          : undefined;
 
   return (
     <NotesShell

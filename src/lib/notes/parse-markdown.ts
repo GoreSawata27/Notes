@@ -2,6 +2,13 @@ import { normalizeNewlines, parseBlocks, slugify } from "./markdown";
 import type { MdBlock, NoteSection, Question, QuestionTag } from "./types";
 
 const TAG_RE = /\[(must-know|infosys|bajaj)\]/gi;
+const VERSION_TAG_RE = /\[(React [\d.]+|experimental|RSC|framework)\]/gi;
+
+export function extractVersionBadges(title: string): { text: string; badges: string[] } {
+  const badges = [...title.matchAll(VERSION_TAG_RE)].map((match) => match[1]);
+  const text = title.replace(VERSION_TAG_RE, "").replace(/\s+/g, " ").trim();
+  return { text, badges };
+}
 
 export function parseProfile(md: string): { profile: MdBlock[]; body: string } {
   const source = normalizeNewlines(md);
@@ -55,7 +62,10 @@ export function parseMarkdown(md: string): NoteSection[] {
   for (const line of source.split("\n")) {
     if (line.startsWith("## ") && !/^## Profile/i.test(line)) {
       flushBody();
-      const title = line.replace(/^##\s+/, "").replace(/^Section \d+:\s*/i, "").trim();
+      const title = line
+        .replace(/^##\s+/, "")
+        .replace(/^Section \d+:\s*/i, "")
+        .trim();
       currentSection = { id: "", title, questions: [] };
       currentSection.id = `t${sections.length + 1}-${slugify(title)}`;
       sections.push(currentSection);
@@ -110,9 +120,7 @@ export function parseLearningMarkdown(md: string): NoteSection[] {
     const takeawayMatch = body.match(
       /\*\*Takeaway:\*\*\s*([\s\S]*?)(?=\*\*Explain:\*\*|\*\*Tip:\*\*|\*\*Try it:\*\*|$)/i,
     );
-    const explainMatch = body.match(
-      /\*\*Explain:\*\*\s*([\s\S]*?)(?=\*\*Tip:\*\*|\*\*Try it:\*\*|$)/i,
-    );
+    const explainMatch = body.match(/\*\*Explain:\*\*\s*([\s\S]*?)(?=\*\*Tip:\*\*|\*\*Try it:\*\*|$)/i);
     const tipMatch = body.match(/\*\*Tip:\*\*\s*([\s\S]*?)(?=\*\*Try it:\*\*|$)/i);
     const tryMatch = body.match(/\*\*Try it:\*\*\s*([\s\S]*?)$/i);
 
@@ -122,8 +130,15 @@ export function parseLearningMarkdown(md: string): NoteSection[] {
     explainRaw = explainRaw.replace(/^---\s*$/gm, "").trim();
 
     const firstPara = explainRaw.split("\n\n")[0] ?? "";
-    const say = firstPara.replace(/\n/g, " ").trim();
-    const rest = explainRaw.slice(firstPara.length).trim();
+    const lead = firstPara.trim();
+    const structuredLead =
+      lead.startsWith("|") ||
+      lead.startsWith("```") ||
+      /^#{1,3}\s/.test(lead) ||
+      /^[-*] /.test(lead) ||
+      /^\d+\. /.test(lead);
+    const say = structuredLead ? "" : lead.replace(/\n/g, " ").trim();
+    const rest = structuredLead ? explainRaw : explainRaw.slice(firstPara.length).trim();
 
     currentQ.shortDef = takeawayMatch ? takeawayMatch[1].replace(/^---\s*$/gm, "").trim() : "";
     currentQ.say = say;
@@ -138,7 +153,10 @@ export function parseLearningMarkdown(md: string): NoteSection[] {
   for (const line of source.split("\n")) {
     if (line.startsWith("## ") && !/^## Profile/i.test(line)) {
       flushBody();
-      const title = line.replace(/^##\s+/, "").replace(/^Section \d+:\s*/i, "").trim();
+      const title = line
+        .replace(/^##\s+/, "")
+        .replace(/^Section \d+:\s*/i, "")
+        .trim();
       currentSection = { id: "", title, questions: [] };
       currentSection.id = `t${sections.length + 1}-${slugify(title)}`;
       sections.push(currentSection);
@@ -152,11 +170,13 @@ export function parseLearningMarkdown(md: string): NoteSection[] {
         currentSection = { id: "t1-general", title: "General", questions: [] };
         sections.push(currentSection);
       }
+      const { text, badges } = extractVersionBadges(lessonHeading[2].replace(/\s+/g, " ").trim());
       currentQ = {
         num: Number.parseInt(lessonHeading[1], 10),
-        text: lessonHeading[2].replace(/\s+/g, " ").trim(),
+        text,
         mustKnow: false,
         tag: "",
+        versionBadges: badges.length ? badges : undefined,
         shortDef: "",
         say: "",
         extra: [],

@@ -13,6 +13,7 @@ export type Question = {
   text: string;
   mustKnow: boolean;
   tag: QuestionTag | "";
+  versionBadges?: string[];
   shortDef: string;
   say: string;
   extra: MdBlock[];
@@ -59,12 +60,27 @@ export type ListItem = {
   num: number;
   title: string;
   badge?: QuestionTag;
+  versionBadges?: string[];
   searchText: string;
   shortDef?: string;
   say?: string;
   extra?: MdBlock[];
   followUp?: string;
   mistake?: string;
+};
+
+export type NotesChapterLink = {
+  href: string;
+  label: string;
+  current?: boolean;
+};
+
+export type ReactCatalogEntry = {
+  slug: string;
+  title: string;
+  description: string;
+  file: string;
+  pill: string;
 };
 
 export type ListSection = {

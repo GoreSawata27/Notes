@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { ListSection, MdBlock, NotesVariant } from "@/lib/notes/types";
+import type { ListSection, MdBlock, NotesChapterLink, NotesVariant } from "@/lib/notes/types";
 import { MdBlocks } from "./MdBlocks";
 import { NotesTopicList } from "./NotesTopicList";
 
@@ -13,9 +13,12 @@ export function NotesShell({
   nextHref,
   nextLabel,
   extraLinks,
+  chapters,
   searchPlaceholder,
   variant = "interview",
   heroNote,
+  prevHref,
+  prevLabel,
 }: {
   brand: string;
   description: string;
@@ -26,6 +29,9 @@ export function NotesShell({
   nextHref: string;
   nextLabel: string;
   extraLinks?: { href: string; label: string }[];
+  chapters?: NotesChapterLink[];
+  prevHref?: string;
+  prevLabel?: string;
   searchPlaceholder?: string;
   variant?: NotesVariant;
   heroNote?: string;
@@ -35,6 +41,21 @@ export function NotesShell({
       <aside className="sidebar">
         <div className="brand">{brand}</div>
         <p className="brand-sub">{description}</p>
+        {chapters && chapters.length > 0 ? (
+          <nav className="chapter-nav" aria-label="Chapters">
+            <div className="chapter-nav-label">Chapters</div>
+            {chapters.map((chapter, index) => (
+              <Link
+                key={chapter.href}
+                href={chapter.href}
+                className={chapter.current ? "nav-link current" : "nav-link"}
+              >
+                <span className="n">{String(index + 1).padStart(2, "0")}</span>
+                {chapter.label}
+              </Link>
+            ))}
+          </nav>
+        ) : null}
         <nav>
           {sections.map((section, index) => (
             <a key={section.id} className="nav-link" href={`#${section.id}`}>
@@ -45,6 +66,7 @@ export function NotesShell({
         </nav>
         <div className="links">
           <Link href="/">← Hub</Link>
+          {prevHref && prevLabel ? <Link href={prevHref}>← {prevLabel}</Link> : null}
           <Link href={nextHref}>{nextLabel} →</Link>
           {extraLinks?.map((link) => (
             <Link key={link.href} href={link.href}>

@@ -62,6 +62,7 @@ export const NOTE_TOPICS: TopicMeta[] = [
     pill: "UI library",
     description: "Hooks, rendering, performance, routing, patterns, and TypeScript.",
     navNext: { href: "/notes/nextjs", label: "Next.js notes" },
+    extraLinks: [{ href: "/notes/learn/react/evolution", label: "React Evolution →" }],
     learningHref: "/notes/learn/react",
   },
   {

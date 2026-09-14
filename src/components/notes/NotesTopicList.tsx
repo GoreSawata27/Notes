@@ -16,6 +16,13 @@ function badgeLabel(badge: ListItem["badge"]) {
   return null;
 }
 
+function versionPillClass(label: string) {
+  const lower = label.toLowerCase();
+  if (lower === "experimental") return "pill pill-warn";
+  if (lower === "rsc" || lower === "framework") return "pill pill-info";
+  return "pill pill-version";
+}
+
 function QuestionCard({ item, variant }: { item: ListItem; variant: NotesVariant }) {
   const badge = badgeLabel(item.badge);
   const tipLabel = variant === "learning" ? "Tip" : "Follow-up";
@@ -26,6 +33,11 @@ function QuestionCard({ item, variant }: { item: ListItem; variant: NotesVariant
         <span className="q-num">{String(item.num).padStart(2, "0")}</span>
         <span className="q-title">
           <InlineMd text={item.title} />
+          {item.versionBadges?.map((label) => (
+            <span key={label} className={versionPillClass(label)}>
+              {label}
+            </span>
+          ))}
           {badge ? <span className={badge.className}>{badge.text}</span> : null}
         </span>
       </summary>
